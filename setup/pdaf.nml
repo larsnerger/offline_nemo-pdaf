@@ -1,0 +1,83 @@
+! Namelist file for PDAF configuration
+
+&nemo_nml
+! Path and file for reading model dimensions
+path_dims='../out_free'
+file_dims='NORDIC_1d_grid_T_20150101-20150101.nc'
+use_wet_state = 2
+read_decomp=.false.
+/
+
+&pdaf_nml
+!program_mode = 'covar'  ! 'assim' for analysis step; 'covar' to generate covariance matrix
+program_mode = 'assim'
+
+dim_ens=30
+
+iday = 1
+coupling_nemo='incr'     ! 'rest' or 'incr'
+genEnsMeanYearly=.false.
+filtertype=7             ! 7 for analysis step, 5 for no analysis, e.g. to generate set of ensemble files
+printconfig=.true.
+ensfile_type=2           ! 2: read from set of snapshop files; 5: init from covariance matrix
+write_ens_states=.false.
+write_ens_fields=.false.
+write_var_time='fcst'   ! (both, fcst, ana, none)
+saveState = .true.
+!saveIncr = .true.
+
+! Directories and file names
+path_state='../out_free'
+file_state_date1='20150101'
+file_state_date2='20150101'
+path_ens='./'
+file_ens='ensemble_t4_prod'
+file_PDAF_state = './PDAFstate'
+file_PDAF_variance = './PDAFVariance.nc'
+file_PDAF_incr = './PDAFIncrement.nc'
+ens_filelist = 'ens_dates.txt'
+path_restart  = './'
+file_restart  = 'restart_in.nc'
+path_covar='../covars/'
+file_covar='covar_N60.nc'
+
+locweight=2
+forget=0.95
+
+! Settings for profile data
+!assim_prof = .true.
+path_prof='./'
+!file_obs='OUTFILE.dat'
+file_prof='20160926shark_Oxy.dat'
+variable_prof='votemper' 
+rms_obs_prof = 0.8
+shiftObsInWet = .FALSE.
+lradius_prof=20.0
+sradius_prof=20.0
+rms_obs_prof=0.8
+
+! Settings for CMEMS SST
+assim_sst_cmems = .true.
+path_sst_cmems = '../obs'
+file_sst_cmems = 'sst_multi_201801.nc'
+mode_sst_cmems = 0     ! 0 for linear interpolation onto observation grid
+dist_sst_cmems = 'geo' ! 'geo' for geographic in km; 'gp' for grid point distance
+rms_obs_sst_cmems = 0.8
+lradius_sst_cmems = 20000.0 !5.0
+sradius_sst_cmems = 20000.0 !5.0
+/
+
+! Setup of state vector
+&state_vector
+ screen=1
+ sv_ssh = .true.
+ sv_temp = .true.
+ sv_salt = .true.
+ sv_uvel = .true.
+ sv_vvel = .true.
+
+
+! Settings to generate covariance matrix
+&gen_cov
+ hwindow = 10   ! half window size to compute running mean
+/

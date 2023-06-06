@@ -1,0 +1,7 @@
+! Namelist file for ERGOM PDAF 
+
+&ergompdaf_nml
+startEnsTime = 2016010100.0
+endEnsTime = 2016013100.0
+incrTime = 2016011500.0
+/
