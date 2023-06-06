@@ -13,7 +13,7 @@
 #    (See directory BASEDIR/make.arch for files. PDAF_ARCH is filename without .h)
 
 # Root directory of PDAF package
-BASEDIR = ../PDAF_V2.1
+BASEDIR = ../PDAF
 
 DEF_NCPAR = -DUSE_NCPAR
 
