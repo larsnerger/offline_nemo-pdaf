@@ -15,8 +15,6 @@
 # Root directory of PDAF package
 BASEDIR = ../PDAF
 
-DEF_NCPAR = -DUSE_NCPAR
-
 # Include machine-specific definitions
 # For available include files see directory make.arch
 # To choose a file, set PDAF_ARCH either here or by an
@@ -98,12 +96,12 @@ libpdaf-d.a:
 ######################################################
 
 .F90.o :
-	$(FC) $(OPT) $(DEF_NCPAR) $(CPP_DEFS) $(MPI_INC) $(NC_INC) -I$(BASEDIR)/include -c \
-	-convert big_endian -assume byterecl  $*.F90
+	$(FC) $(OPT) $(CPP_DEFS) $(MPI_INC) $(NC_INC) -I$(BASEDIR)/include -c \
+	$*.F90
 
 .f90.o :
-	$(FC) $(OPT) $(DEF_NCPAR) $(CPP_DEFS) $(MPI_INC) $(NC_INC) -c \
-	-convert big_endian -assume byterecl $*.f90
+	$(FC) $(OPT) $(CPP_DEFS) $(MPI_INC) $(NC_INC) -c \
+	$*.f90
 
 # For older compilers one might need to separate the
 # preprocessing from the compilation as defined below:
