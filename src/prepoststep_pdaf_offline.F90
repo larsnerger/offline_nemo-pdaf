@@ -1,13 +1,13 @@
-!> Controlling Pre- and Post-Processing of the PDAF output
+!> Pre- and Post-Processing of the PDAF output
 !!
-!!  - For global filters (e.g. SEIK), the routine is called
+!!  - For global filters (e.g. ESTKF), the routine is called
 !! before the analysis and after the ensemble transformation.
-!!  - For local filters (e.g. LSEIK), the routine is called
+!!  - For local filters (e.g. LESTKF), the routine is called
 !! before and after the loop over all local analysis
 !! domains.
 !! 
 !! The routine provides full access to the state
-!! estimate and the state ensemble to the user.
+!! ensemble to the user.
 !! Thus, user-controlled pre- and poststep
 !! operations can be performed here. For example
 !! the forecast and the analysis states and ensemble
@@ -388,7 +388,7 @@ subroutine prepoststep_pdaf(step, dim_p, dim_ens, dim_ens_p, dim_obs_p, &
            write(ensstr,'(i3.3)') iens
 
            ! Store member of analysis ensemble
-           state_tmp = ens_p(:,iens)! - ens_f_p(:,iens)
+           state_tmp = ens_p(:,iens)
 
            call write_increment_mv(state_tmp, ens_f_p(:,iens), &
                 trim(file_out_incr)//'_'//trim(ndastp_str)//'_'//ensstr//'.nc', &
@@ -405,11 +405,11 @@ subroutine prepoststep_pdaf(step, dim_p, dim_ens, dim_ens_p, dim_obs_p, &
         if (mype == 0) write (*,'(a,5x,a)') 'NEMO-PDAF', '--- Write increment of ensemble mean'
 
         ! Store analysis state
-        state_tmp = state_p! - state_f_p
+        state_tmp = state_p
 
         ! Write increment to netCDF
         call write_increment_mv(state_tmp, state_f_p, trim(file_out_incr)//'_'//trim(ndastp_str)//'.nc', &
-             rdate, nsteps, 1, 1)
+             rdate, 1, 1, 1)
 
         deallocate(state_f_p)
 

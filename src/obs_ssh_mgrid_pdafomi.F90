@@ -93,7 +93,7 @@ CONTAINS
       USE pdafomi, &
          ONLY: PDAFomi_gather_obs
       USE assimilation_pdaf, &
-         ONLY: filtertype, delt_obs
+         ONLY: filtertype, delt_obs, use_global_obs
       use statevector_pdaf, &
            only: id, sfields
       USE parallel_pdaf, &
@@ -155,7 +155,7 @@ CONTAINS
       thisobs%ncoord = 2
 
       ! SEt to use limited full observations
-      thisobs%use_global_obs = 0
+      thisobs%use_global_obs = use_global_obs
 
       ! **********************************
       ! *** Read PE-local observations ***
@@ -176,7 +176,7 @@ CONTAINS
       ! Increment time in NetCDF file so correct obs read
       nc_step = nc_step + delt_obs
 
-      nc_step = 1
+      nc_step = 40
 IF (mype_filter == 0) write (*,*) 'NEMO-PDAF:    Warning: reading step ', nc_step, 'is hard-coded'
 
       pos = (/1, 1, nc_step/)

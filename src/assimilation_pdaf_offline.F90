@@ -48,6 +48,7 @@ module assimilation_pdaf
 ! Settings for observations - available as command line options
   integer :: delt_obs         !< time step interval between assimilation steps
   logical :: twin_experiment  !< Whether to run an twin experiment with synthetic observations
+  integer :: use_global_obs = 1  !< (1) use global obs.; (0) use domain-reduced full obs.
 
 ! General control of PDAF - available as command line options
   integer :: screen       !< Control verbosity of PDAF

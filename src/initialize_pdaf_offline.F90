@@ -25,13 +25,8 @@ contains
   !! such that the internal initialization of PDAF is performed.
   !! The initialization is used to set-up local domain and filter options
   !! such as the filter type, inflation, and localization radius.
+  !!
   !! This variant is for the offline mode of PDAF.
-  !!
-  !! The NEMO grid information, e.g. on wet surface points is 
-  !! initialized in `set_nemo_grid`.
-  !!
-  !! The statevector dimension, and the offsets and dimensions of the
-  !! statevector variables are calculated in `setup_statevector`.
   !!
   !! Much of the initialisation is read from a PDAF-specific namelist.
   !! This is performed in `read_config_pdaf`.
@@ -108,6 +103,7 @@ contains
       !  (11) LKNETF
       !  (12) PF
     dim_ens = n_modeltasks  ! Size of ensemble for all ensemble filters
+      !   We use n_modeltasks here, initialized in init_parallel_pdaf
     subtype = 5       ! (5) Offline mode
     type_trans = 0    ! Type of ensemble transformation
       !   SEIK/LSEIK and ESTKF/LESTKF:
@@ -153,7 +149,6 @@ contains
     ! *********************************************************************
 
     ! Which observations to assimilate
-!   assim_prof = .false.        ! Whether to assimilate profile data
     assim_sst_cmems = .false.        ! Whether to assimilate SST data from CMEMS
     assim_ssh_mgrid = .false.        ! Whether to assimilate SSH data on model grid
 
@@ -165,19 +160,11 @@ contains
       !   (3) regulated localization of R with mean error variance
       !   (4) regulated localization of R with single-point error variance
 
-  ! Settings for profile observations
-!   rms_obs_prof = 0.8    ! Observation error stddev for profile data
-!   lradius_prof = 20.0  ! Radius in grid points for observation domain in local filters
-!   sradius_prof = lradius_prof  ! Support range for 5th-order polynomial
-!                     ! or range for 1/e for exponential weighting
-!   path_prof = '/cmems_archive/bm1302b/OBS/Batch/SHARK/d2019/'
-!   file_prof = '20191216shark_OXY.dat'
-
     ! Settings for SSH data on model grid
     rms_ssh_mgrid     = 0.8_8     ! Observation error stddev for SSH data on mopdel grid
     lradius_ssh_mgrid = 10000.0_8 ! Radius in km for lon/lat (or in grid points)
     sradius_ssh_mgrid = lradius_ssh_mgrid  ! Support radius for 5th-order polynomial
-      ! or distance for 1/e for exponential weighting
+                                  ! or distance for 1/e for exponential weighting
 
     ! Settings for CMEMS satellite SST
     rms_obs_sst_cmems = 0.8_8     ! Observation error stddev for SST data from CMEMS
@@ -186,7 +173,7 @@ contains
                                   !  (1) super-obbing: average 4 observation values
     lradius_sst_cmems = 10000.0_8 ! Radius in km for lon/lat (or in grid points)
     sradius_sst_cmems = lradius_sst_cmems  ! Support radius for 5th-order polynomial
-      ! or distance for 1/e for exponential weighting
+                                  ! or distance for 1/e for exponential weighting
 
 
 ! ******************************************
@@ -205,7 +192,7 @@ contains
 ! ************************************************
 
     ! Initialize dimension information for NEMO grid
-    call set_nemo_grid()
+    call set_nemo_grid(screen)
 
     ! Setup state vector
     call setup_statevector(dim_state, dim_state_p)

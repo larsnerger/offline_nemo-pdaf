@@ -158,12 +158,14 @@ contains
          only: filtertype, subtype, type_trans, type_sqrt, &
          locweight, screen, dim_ens, ensscale, delt_obs, &
          type_forget, forget, type_ens_init, type_central_state, &
-         ens_restart, type_hyb, hyb_gamma, hyb_kappa
+         ens_restart, type_hyb, hyb_gamma, hyb_kappa, use_global_obs
     use io_pdaf, &
          only: verbose_io, path_inistate, path_ens, file_ens, file_covar, &
          sgldbl_io, coupling_nemo, save_var, save_state, save_ens_sngl, &
          file_out_incr, file_out_state, file_out_variance, &
          ids_write, add_slash
+    use nemo_pdaf, &
+         only: type_limcoords
     use statevector_pdaf, &
          only: update_ssh, update_temp, update_salt, update_vel
 #if defined key_top
@@ -216,11 +218,13 @@ contains
     namelist /update_nml/ &
          update_ssh, update_temp, update_salt, update_vel, &
          do_asmiau, steps_asmiau, shape_asmiau, iter_divdmp, &
-         update_trc, do_bgciau, steps_bgciau, shape_bgciau
+         update_trc, do_bgciau, steps_bgciau, shape_bgciau, &
+         type_limcoords, use_global_obs
 #else
     namelist /update_nml/ &
          update_ssh, update_temp, update_salt, update_vel, &
-         do_asmiau, steps_asmiau, shape_asmiau, iter_divdmp
+         do_asmiau, steps_asmiau, shape_asmiau, iter_divdmp, &
+         type_limcoords, use_global_obs
 #endif
 
     namelist /obs_ssh_mgrid_nml/ &
@@ -263,9 +267,13 @@ contains
     call add_slash(path_ens)
 
     ! *** Set flags for ensemble restart ***
-    if (ens_restart .and. subtype/=5) then
-       type_ens_init = 4
-       type_central_state = 0
+    if (ens_restart) then
+       if (subtype/=5) then
+          type_ens_init = 4
+          type_central_state = 0
+       else
+          type_central_state = 0
+       end if
     end if
 
     ! Print PDAF parameters to screen
@@ -289,7 +297,7 @@ contains
        end if
        write (*, *) ''
        write (*, '(a,3x,a)') 'NEMO-PDAF','[init_nml]:'
-       if (subtype/=5) write (*, '(a,5x,a,l)') 'NEMO-PDAF','ens_restart ', ens_restart
+       write (*, '(a,5x,a,l)') 'NEMO-PDAF','ens_restart ', ens_restart
        write (*, '(a,5x,a,i10)') 'NEMO-PDAF','type_ens_init      ', type_ens_init
        write (*, '(a,5x,a,i10)') 'NEMO-PDAF','type_central_state ', type_central_state
        write (*, '(a,5x,a,5x,f10.2)') 'NEMO-PDAF','ensscale     ', ensscale

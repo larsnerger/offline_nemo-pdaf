@@ -1,5 +1,0 @@
-! Namelist file for PDAF eofcovar
-
-&nemo_nml
- do_mv = 0
-/

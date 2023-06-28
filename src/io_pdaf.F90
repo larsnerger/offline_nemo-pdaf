@@ -14,7 +14,7 @@ module io_pdaf
        only: nlvls=>jpk, nlats=>jpjglo, nlons=>jpiglo, &
        depths=>gdept_1d, lons, lats, i0, j0, &
        tmp_4d, ni_p, nj_p, nk_p, istart, jstart, &
-       nimpp, njmpp, nlei, nlej, stmp_4d, tmask
+       stmp_4d, tmask
 
   ! Include information on state vector
   use statevector_pdaf, &
@@ -1036,10 +1036,10 @@ end subroutine read_ens_mv_filelist
        startz(1)=1
        countz(1)=nlvls
 
-       startC(1) = nimpp
-       countC(1) = nlei-i0
-       startC(2) = njmpp
-       countC(2) = nlej-j0
+       startC(1) = istart
+       countC(1) = ni_p
+       startC(2) = jstart
+       countC(2) = nj_p
 
        call check( nf90_put_var(ncid, id_lon, lons, startC, countC))
        call check( nf90_put_var(ncid, id_lat, lats, startC, countC))
@@ -1064,8 +1064,7 @@ end subroutine read_ens_mv_filelist
     ! *** Write fields
 
     call check( nf90_inq_varid(ncid, 'time', id_time) )
-!    call check( nf90_VAR_PAR_ACCESS(NCID, id_time, NF90_COLLECTIVE) )
-!    call check( nf90_put_vara(ncid, id_time, timeField, start=(/step/), count=(/1/)))
+
     startt(1) = step
     countt(1) = 1
     call check( nf90_put_var(ncid, id_time, timeField, startt(1:1), countt(1:1)))
@@ -1244,10 +1243,10 @@ end subroutine read_ens_mv_filelist
        startz(1)=1
        countz(1)=nlvls
 
-       startC(1) = nimpp
-       countC(1) = nlei-i0
-       startC(2) = njmpp
-       countC(2) = nlej-j0
+       startC(1) = istart
+       countC(1) = ni_p
+       startC(2) = jstart
+       countC(2) = nj_p
 
        call check( nf90_put_var(ncid, id_lon, lons, startC, countC))
        call check( nf90_put_var(ncid, id_lat, lats, startC, countC))
@@ -1483,10 +1482,10 @@ end subroutine read_ens_mv_filelist
        startz(1)=1
        countz(1)=nlvls
 
-       startC(1) = nimpp
-       countC(1) = nlei-i0
-       startC(2) = njmpp
-       countC(2) = nlej-j0
+       startC(1) = istart
+       countC(1) = ni_p
+       startC(2) = jstart
+       countC(2) = nj_p
 
        call check( nf90_put_var(ncid, id_lon, lons, startC, countC))
        call check( nf90_put_var(ncid, id_lat, lats, startC, countC))
@@ -1558,20 +1557,12 @@ end subroutine read_ens_mv_filelist
              startt(3) = 1
              countt(3) = nlvls
 
-             if (sgldbl_io=='dbl') then
-                call check( nf90_put_var(ncid, id_incr, tmp_4d, startt, countt))
-             else
-                call check( nf90_put_var(ncid, id_incr, stmp_4d, startt, countt))
-             end if
+             call check( nf90_put_var(ncid, id_incr, tmp_4d, startt, countt))
           else
              startt(3) = step
              countt(3) = 1
 
-             if (sgldbl_io=='dbl') then
-                call check( nf90_put_var(ncid, id_incr, tmp_4d, startt(1:3), countt(1:3)))
-             else
-                call check( nf90_put_var(ncid, id_incr, stmp_4d, startt(1:3), countt(1:3)))
-             end if
+             call check( nf90_put_var(ncid, id_incr, tmp_4d, startt(1:3), countt(1:3)))
           end if
        end if
     end do

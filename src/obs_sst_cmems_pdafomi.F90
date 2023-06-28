@@ -104,7 +104,7 @@ contains
     use PDAFomi, &
          only: PDAFomi_gather_obs, PDAFomi_get_interp_coeff_lin
     use assimilation_pdaf, &
-         only: filtertype, screen
+         only: filtertype, screen, use_global_obs
     use statevector_pdaf, &
          only: id, sfields
     use parallel_pdaf, &
@@ -209,7 +209,7 @@ contains
     thisobs%ncoord = 2
 
     ! In case of MPI parallelization restrict observations to sub-domains
-    if (npes_filter>1) thisobs%use_global_obs = 0
+    if (npes_filter>1) thisobs%use_global_obs = use_global_obs
 
 
 ! **********************************

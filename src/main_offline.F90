@@ -20,7 +20,7 @@ program MAIN_OFFLINE
   use assimilation_pdaf, &    ! Dimensions
        only: dim_state, dim_state_p, assimilate_pdaf
   use initialize_offline, &
-       only: init_offline
+       only: initialize
   use initialize_pdaf, &      
        only: init_pdaf
   use utils_pdaf, &
@@ -53,9 +53,9 @@ program MAIN_OFFLINE
      write (*, '(9x, a)') 'Data assimilation with PDAF'
 
      if (npes_world > 1) then
-        write (*, '(16x, a, i3, a/)') 'Running on ', npes_world, ' PEs'
+        write (*, '(21x, a, i3, a/)') 'Running on ', npes_world, ' PEs'
      else
-        write (*, '(16x, a/)') 'Running on 1 PE'
+        write (*, '(21x, a/)') 'Running on 1 PE'
      end if
 
   end if initscreen
@@ -67,19 +67,20 @@ program MAIN_OFFLINE
   call init_parallel_pdaf(comm_model)
 
 
-! *** Initialize NEMO grid information ***
+! *** Initialize model information ***
 
-  call init_offline()
-
-
-! *** Initialize PDAF ***
-
-  call init_pdaf()
+  call initialize()
 
 
 ! *******************************
 ! ***      ASSIMILATION       ***
 ! *******************************
+
+! *** Initialize PDAF ***
+
+  call init_pdaf()
+
+! *** Perform analysis ***
 
   call assimilate_pdaf()
 
