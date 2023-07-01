@@ -36,7 +36,7 @@ To preparare the run you should
 * Place the input files (snapshots) from the free run into `out_free/`.
 * Link the executable `PDAF_offline` from `src/` into `run/`
 * Copy the files from `setup/` into `run/`.
-* The run script `run_pdaf_1task.sl` is for runnig with SLURM (configured for JUWELS). This file is configured to use a single compute node with 48 processor cores to run with a single MPI task and 48 OpenMP threads. The files `run_pdaf_2tasks.sl` and `run_pdaf_4tasks.sl` are configured for 2 MPI tasks using 24 OpenMP threads each or 4 MPI tasks using 12 OpenMP threads each, respectively. The run script `run_pdaf_4node.sl` uses 4 MPI tasks with 48 OpenMP threads each. 
+* The run script `run_pdaf_1task.sl` is for runnig with SLURM (configured for JUWELS). This file is configured to use a single compute node with 48 processor cores to run with a single MPI task and 48 OpenMP threads. The files `run_pdaf_2tasks.sl` and `run_pdaf_4tasks.sl` are configured for 2 MPI tasks using 24 OpenMP threads each or 4 MPI tasks using 12 OpenMP threads each, respectively. The run script `run_pdaf_2node.sl` uses 2 MPI tasks with 48 OpenMP threads each. 
 
 Now the job is ready to run. For running with SLURM, you can execute `sbatch run_pdaf_1task.sl`. The run produces the output files `PDAFstate.nc`, `PDAFVariance.nc` and `PDAFIncrement.nc`. On JUWELS with 48 OpenMP threads the job should take about 3 minutes to run. The job output shows detailed timing and memory information at the end. 
 
