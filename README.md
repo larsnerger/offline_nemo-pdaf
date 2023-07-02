@@ -38,15 +38,15 @@ To preparare the run you should
 * Copy the files from `setup/` into `run/`.
 * The run script `run_pdaf_1task.sl` is for runnig with SLURM (configured for JUWELS). This file is configured to use a single compute node with 48 processor cores to run with a single MPI task and 48 OpenMP threads. The files `run_pdaf_2tasks.sl` and `run_pdaf_4tasks.sl` are configured for 2 MPI tasks using 24 OpenMP threads each or 4 MPI tasks using 12 OpenMP threads each, respectively. The run script `run_pdaf_2node.sl` uses 2 MPI tasks with 48 OpenMP threads each. 
 
-Now the job is ready to run. For running with SLURM, you can execute `sbatch run_pdaf_1task.sl`. The run produces the output files `PDAFstate.nc`, `PDAFVariance.nc` and `PDAFIncrement.nc`. On JUWELS with 48 OpenMP threads the job should take about 3 minutes to run. The job output shows detailed timing and memory information at the end. 
+Now the job is ready to run. For running with SLURM, you can execute `sbatch run_pdaf_1task.sl`. The run produces the output files `PDAFstate.nc`, `PDAFVariance.nc` and `PDAFIncrement.nc`. On JUWELS with 48 OpenMP threads the job should take about 5 minutes to run. The job output shows detailed timing and memory information at the end. 
 
-The job needs about 7 GB of RAM. The outputs have a size of about 6.6 GB.
+The job needs about 14 GB of RAM. The outputs have a size of about 6.6 GB.
 
 ## The test case
 
 The test case is a realistic setup of moderate size (a similar case is currently run operational to produce forecasts for the Baltic Sea within the Copernicus Marine Service). The configuration is for using the shared-memory parallelization with OpenMP, but also moderate MPI-parallelization can be used (generally, one can also run with a high number of MPI tasks, but the code has no functionality to automatically generate the decomposition, so that one would need to specify sub-domains manually in a configuration file. We run this case in a variant in which PDAF is directly coupled into the ocean model, but this online-coupled case looks to complicated as a test case for porting to GPUs.) 
 
-The test case performs a single analysis (assimilation) step that assimilates a field of sea surface temperature. Used is the ensemble Kalman filter LESTKF with an ensemble of 30 members. The ensemble is read before the analysis in `PDAF_init` and the ensemble mean and the ensemble variance before and after the assimialtion update are writting into netcdf files. Further an increment file is written. This could then be used with the NEMO ocean model to apply the increment (Here we omit the use of NEMO and focus on the analysis step of the data assimilation).
+The test case performs a single analysis (assimilation) step that assimilates a field of sea surface temperature. Used is the ensemble Kalman filter variant LESTKF with an ensemble of 60 members. The ensemble is read before the analysis in `PDAF_init` and the ensemble mean and the ensemble variance before and after the assimialtion update are writting into netcdf files. Further an increment file is written. This could then be used with the NEMO ocean model to apply the increment (Here we omit the use of NEMO and focus on the analysis step of the data assimilation).
 
 The motivation for porting to GPUs comes from the fact that more-and-more Earth system component models are ported to GPUs and these aim for exascale. For such models, also the data assimilation component needs GPU support. 
 
@@ -54,4 +54,9 @@ An important aspect of PDAF is that there is a generic part that is computed ins
 
 Note, that the major execution time in the actual assimilation step inside `PDAFomi_assimilate_local` (in assimilation_pdaf_offline.F90) shifts from the call-back routine `init_dim_obs_pdafomi` (in callback_obs_pdafomi.F90) for a single MPI task to operations inside the PDAF library for a larger number of MPI tasks. The execution time for the initialization in PDAF_init, and here in particular the time tine `init_ens_pdaf` should be of less concern. (In the case that PDAF is directly coupling into a model, this would only be executed once at the very beginning of a data assimilation sequence). The major candidate for porting should be the calculations inside the analysis step (listed under `LESTKF analysis` in the timing output).
 
+## Options for runnig PDAF_offline
 
+The run is controlled by the namelist files `namelist_cfg.pdaf` and `pdaf_offline.nml`. The first file is identical to what one would use for the case that PDAF is directly couplined into the numericla model NEMO, while the second contains the particular settings for the offline coupled mode. 
+
+- The ensemble size is set in the namelist `ensemble_nml` in `namelist_cfg.nml`.
+- In `pdaf_offline.nml` the value of `use_wet_state`changes the compression of the model fiedl arrays into the state vector. For use_wet_state=2 only wet grid points of the ocean model are included, while for use_wet_state=0 all points are included. The latter choice can be used to simulate a case that uses significantly more memory (the test case needs then about 160 GB of RAM).
