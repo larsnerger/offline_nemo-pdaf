@@ -1,5 +1,5 @@
 &ensemble_nml
-  dim_ens=4
+  dim_ens=60
   screen=0
 /
 
@@ -19,6 +19,8 @@
   do_asmiau = .true.
   steps_asmiau = 4
   shape_asmiau = 1
+ ! Settings for full observations
+  use_global_obs = 0
 /
 
 &init_nml
